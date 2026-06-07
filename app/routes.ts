@@ -19,5 +19,6 @@ export default [
     route("users", "routes/_layout.users._index.tsx"),
     route("cities", "routes/_layout.cities._index.tsx"),
     route("depositos", "routes/_layout.depositos._index.tsx"),
+    route("notificaciones", "routes/_layout.notificaciones.tsx"),
   ]),
 ] satisfies RouteConfig;
