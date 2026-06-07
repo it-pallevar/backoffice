@@ -14,6 +14,7 @@ export default [
     route("pedidos", "routes/_layout.pedidos._index.tsx"),
     route("pedidos/:id", "routes/_layout.pedidos.$id.tsx"),
     route("riders", "routes/_layout.riders._index.tsx"),
+    route("riders/mapa", "routes/_layout.riders.mapa.tsx"),
     route("riders/:id", "routes/_layout.riders.$id.tsx"),
     route("users", "routes/_layout.users._index.tsx"),
     route("cities", "routes/_layout.cities._index.tsx"),
