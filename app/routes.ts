@@ -17,6 +17,7 @@ export default [
     route("riders/mapa", "routes/_layout.riders.mapa.tsx"),
     route("riders/:id", "routes/_layout.riders.$id.tsx"),
     route("users", "routes/_layout.users._index.tsx"),
+    route("users/:id", "routes/_layout.users.$id.tsx"),
     route("cities", "routes/_layout.cities._index.tsx"),
     route("depositos", "routes/_layout.depositos._index.tsx"),
     route("notificaciones", "routes/_layout.notificaciones.tsx"),
