@@ -37,6 +37,12 @@ export default function CitiesPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Modal editar ciudad
+  const [editCity, setEditCity] = useState<City | null>(null);
+  const [editForm, setEditForm] = useState(emptyCity);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
   // Config delivery
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [deliveryConfig, setDeliveryConfig] = useState<DeliveryConfig | null>(null);
@@ -85,6 +91,40 @@ export default function CitiesPage() {
       setFormError(e instanceof Error ? e.message : "Error al crear ciudad");
     } finally {
       setSaving(false);
+    }
+  }
+
+  function openEdit(city: City) {
+    setEditCity(city);
+    setEditError(null);
+    setEditForm({
+      pais: city.pais,
+      ciudad: city.ciudad,
+      latitud: String(city.latitud),
+      longitud: String(city.longitud),
+      radio_km: String(city.radio_km),
+    });
+  }
+
+  async function handleUpdateCity(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editCity) return;
+    setSavingEdit(true);
+    setEditError(null);
+    try {
+      const res = await api.put<{ status: string; data: City }>(`/admin/cities/${editCity.id}`, {
+        pais: editForm.pais,
+        ciudad: editForm.ciudad,
+        latitud: parseFloat(editForm.latitud),
+        longitud: parseFloat(editForm.longitud),
+        radio_km: parseFloat(editForm.radio_km),
+      });
+      setCities((prev) => prev.map((c) => (c.id === editCity.id ? res.data : c)));
+      setEditCity(null);
+    } catch (e) {
+      setEditError(e instanceof Error ? e.message : "Error al actualizar ciudad");
+    } finally {
+      setSavingEdit(false);
     }
   }
 
@@ -181,6 +221,12 @@ export default function CitiesPage() {
                       <td className="px-5 py-3.5 text-center">
                         <div className="flex items-center justify-center gap-3">
                           <button
+                            onClick={() => openEdit(c)}
+                            className="text-gray-600 hover:text-gray-900 text-xs font-medium"
+                          >
+                            Editar
+                          </button>
+                          <button
                             onClick={() => openDeliveryConfig(c)}
                             className="text-indigo-600 hover:text-indigo-800 text-xs font-medium"
                           >
@@ -234,6 +280,46 @@ export default function CitiesPage() {
                   </button>
                   <button type="submit" disabled={saving} className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2.5 rounded-lg transition disabled:opacity-60">
                     {saving ? "Guardando..." : "Crear ciudad"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal editar ciudad */}
+        {editCity && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+              <h2 className="font-bold text-gray-900 mb-1">Editar ciudad</h2>
+              <p className="text-gray-400 text-sm mb-5">{editCity.ciudad}, {editCity.pais}</p>
+              <form onSubmit={handleUpdateCity} className="space-y-4">
+                {[
+                  { name: "pais", label: "País", placeholder: "El Salvador" },
+                  { name: "ciudad", label: "Ciudad", placeholder: "San Salvador" },
+                  { name: "latitud", label: "Latitud", placeholder: "13.6929" },
+                  { name: "longitud", label: "Longitud", placeholder: "-89.2182" },
+                  { name: "radio_km", label: "Radio (km)", placeholder: "10" },
+                ].map((f) => (
+                  <div key={f.name}>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">{f.label}</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder={f.placeholder}
+                      value={editForm[f.name as keyof typeof editForm]}
+                      onChange={(e) => setEditForm((prev) => ({ ...prev, [f.name]: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    />
+                  </div>
+                ))}
+                {editError && <p className="text-red-500 text-sm">{editError}</p>}
+                <div className="flex gap-3 pt-2">
+                  <button type="button" onClick={() => setEditCity(null)} className="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-lg hover:bg-gray-50 transition">
+                    Cancelar
+                  </button>
+                  <button type="submit" disabled={savingEdit} className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2.5 rounded-lg transition disabled:opacity-60">
+                    {savingEdit ? "Guardando..." : "Guardar cambios"}
                   </button>
                 </div>
               </form>
