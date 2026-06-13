@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { useAuth } from "~/context/auth";
 import { Sidebar } from "~/components/Sidebar";
+import { SinRiderAlert } from "~/components/SinRiderAlert";
 
 export default function AppLayout() {
   const { user, isLoading } = useAuth();
@@ -32,6 +33,7 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Outlet />
       </div>
+      <SinRiderAlert />
     </div>
   );
 }
