@@ -1,10 +1,16 @@
-FROM node:20-alpine AS build-env
+FROM node:22-alpine AS build-env
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+# Copiamos también el lockfile para que la instalación sea determinista (antes solo se
+# copiaba package.json, así el build re-resolvía dependencias y podía traer versiones
+# nuevas no probadas en cada ejecución del CI). Usamos `npm install` (no `npm ci`) para
+# tolerar pequeños desfases de plataforma en el lockfile (dev Windows + CI Linux).
+COPY package.json package-lock.json ./
+RUN npm install --no-audit --no-fund
 COPY . .
 ARG VITE_API_URL=https://api.pallevar.app/api
 ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_WS_URL=https://ws.pallevar.app
+ENV VITE_WS_URL=$VITE_WS_URL
 RUN npm run build
 
 FROM nginx:alpine

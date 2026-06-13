@@ -48,7 +48,11 @@ export default function PedidosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [estado, setEstado] = useState("");
+  const [estado, setEstado] = useState(() =>
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("estado") ?? ""
+      : ""
+  );
   const [cliente, setCliente] = useState("");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
