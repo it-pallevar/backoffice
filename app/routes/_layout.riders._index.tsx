@@ -18,7 +18,7 @@ interface Rider {
   email: string;
   telefono: string;
   avatar_url: string | null;
-  riderDocumentos: RiderDocumento | null;
+  rider_documentos: RiderDocumento | null;
   created_at: string;
 }
 
@@ -78,7 +78,7 @@ export default function RidersPage() {
       setRiders((prev) =>
         prev.map((r) =>
           r.id === id
-            ? { ...r, riderDocumentos: r.riderDocumentos ? { ...r.riderDocumentos, estado: estado as "aprobado" | "rechazado" | "pendiente" } : r.riderDocumentos }
+            ? { ...r, rider_documentos: r.rider_documentos ? { ...r.rider_documentos, estado: estado as "aprobado" | "rechazado" | "pendiente" } : r.rider_documentos }
             : r
         )
       );
@@ -118,7 +118,7 @@ export default function RidersPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {riders.map((r) => {
-                    const docEstado = r.riderDocumentos?.estado;
+                    const docEstado = r.rider_documentos?.estado;
                     return (
                       <tr key={r.id} className="hover:bg-gray-50 transition">
                         <td className="px-5 py-3.5">

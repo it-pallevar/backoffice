@@ -7,6 +7,14 @@ export function meta() {
   return [{ title: "Detalle de rider — Pallevar Admin" }];
 }
 
+const STORAGE_URL = ((import.meta.env.VITE_API_URL as string) ?? "").replace(/\/api$/, "/storage");
+
+function docUrl(path: string | null): string | null {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  return `${STORAGE_URL}/${path}`;
+}
+
 interface RiderDetalle {
   id: string;
   nombres: string;
@@ -16,14 +24,14 @@ interface RiderDetalle {
   direccion: string;
   avatar_url: string | null;
   created_at: string;
-  riderDocumentos: {
+  rider_documentos: {
     estado: string;
     licencia: string | null;
     dui: string | null;
     antecedentes_penales: string | null;
     constancia_policia: string | null;
   } | null;
-  riderWallet: {
+  rider_wallet: {
     cash_collected_today: number;
     earnings_available: number;
   } | null;
@@ -74,9 +82,9 @@ export default function RiderDetallePage() {
         prev
           ? {
               ...prev,
-              riderDocumentos: prev.riderDocumentos
-                ? { ...prev.riderDocumentos, estado }
-                : prev.riderDocumentos,
+              rider_documentos: prev.rider_documentos
+                ? { ...prev.rider_documentos, estado }
+                : prev.rider_documentos,
             }
           : prev
       );
@@ -107,7 +115,7 @@ export default function RiderDetallePage() {
     );
   }
 
-  const docEstado = rider.riderDocumentos?.estado;
+  const docEstado = rider.rider_documentos?.estado;
   const docCfg = docEstado ? (docEstadoConfig[docEstado] ?? { label: docEstado, color: "bg-gray-100 text-gray-600" }) : null;
 
   return (
@@ -147,7 +155,7 @@ export default function RiderDetallePage() {
               </div>
 
               {/* Acciones */}
-              {rider.riderDocumentos && (
+              {rider.rider_documentos && (
                 <div className="mt-4 flex flex-col gap-2">
                   {docEstado !== "aprobado" && (
                     <button
@@ -181,17 +189,17 @@ export default function RiderDetallePage() {
             </div>
 
             {/* Wallet */}
-            {rider.riderWallet && (
+            {rider.rider_wallet && (
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
                 <h3 className="font-semibold text-gray-900 text-sm mb-4">Billetera</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-400 text-sm">Efectivo cobrado hoy</span>
-                    <span className="font-semibold text-gray-800">${rider.riderWallet.cash_collected_today?.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-800">${rider.rider_wallet.cash_collected_today?.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400 text-sm">Ganancias disponibles</span>
-                    <span className="font-semibold text-green-700">${rider.riderWallet.earnings_available?.toFixed(2)}</span>
+                    <span className="font-semibold text-green-700">${rider.rider_wallet.earnings_available?.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -202,14 +210,14 @@ export default function RiderDetallePage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
               <h3 className="font-semibold text-gray-900 text-sm mb-4">Documentos</h3>
-              {!rider.riderDocumentos ? (
+              {!rider.rider_documentos ? (
                 <p className="text-gray-400 text-sm">No ha subido documentos aún</p>
               ) : (
                 <div className="grid grid-cols-2 gap-4">
-                  <DocImage url={rider.riderDocumentos.licencia} label="Licencia" />
-                  <DocImage url={rider.riderDocumentos.dui} label="DUI" />
-                  <DocImage url={rider.riderDocumentos.antecedentes_penales} label="Antecedentes penales" />
-                  <DocImage url={rider.riderDocumentos.constancia_policia} label="Constancia policía" />
+                  <DocImage url={docUrl(rider.rider_documentos.licencia)} label="Licencia" />
+                  <DocImage url={docUrl(rider.rider_documentos.dui)} label="DUI" />
+                  <DocImage url={docUrl(rider.rider_documentos.antecedentes_penales)} label="Antecedentes penales" />
+                  <DocImage url={docUrl(rider.rider_documentos.constancia_policia)} label="Constancia policía" />
                 </div>
               )}
             </div>
