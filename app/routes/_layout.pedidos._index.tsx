@@ -10,6 +10,7 @@ export function meta() {
 interface PedidoItem {
   id: string;
   estado: string;
+  rider_estado?: string | null;
   total: number;
   negocio: { id: string; nombre: string };
   cliente: { id: string; nombre: string; email: string };
@@ -42,6 +43,23 @@ function BadgeEstado({ estado }: { estado: string }) {
   );
 }
 
+const riderEstadoConfig: Record<string, { label: string; color: string }> = {
+  buscando:  { label: "Buscando rider", color: "bg-yellow-100 text-yellow-800" },
+  sin_rider: { label: "Sin rider",      color: "bg-red-100 text-red-700" },
+  asignado:  { label: "Rider asignado", color: "bg-green-100 text-green-800" },
+};
+
+function BadgeRider({ riderEstado }: { riderEstado?: string | null }) {
+  if (!riderEstado) return null;
+  const cfg = riderEstadoConfig[riderEstado];
+  if (!cfg) return null;
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cfg.color}`}>
+      {cfg.label}
+    </span>
+  );
+}
+
 export default function PedidosPage() {
   const [pedidos, setPedidos] = useState<PedidoItem[]>([]);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
@@ -51,6 +69,12 @@ export default function PedidosPage() {
   const [estado, setEstado] = useState(() =>
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("estado") ?? ""
+      : ""
+  );
+  // Filtro por estado de asignación del rider (ej. sin_rider), separado del estado del pedido.
+  const [riderEstado] = useState(() =>
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("rider_estado") ?? ""
       : ""
   );
   const [cliente, setCliente] = useState("");
@@ -63,6 +87,7 @@ export default function PedidosPage() {
     setError(null);
     const params = new URLSearchParams();
     if (estado) params.set("estado", estado);
+    if (riderEstado) params.set("rider_estado", riderEstado);
     if (cliente) params.set("cliente", cliente);
     if (desde) params.set("desde", desde);
     if (hasta) params.set("hasta", hasta);
@@ -191,7 +216,10 @@ export default function PedidosPage() {
                         {p.rider ? p.rider.nombre : <span className="text-gray-300">—</span>}
                       </td>
                       <td className="px-5 py-3.5 text-center">
-                        <BadgeEstado estado={p.estado} />
+                        <div className="flex flex-col items-center gap-1">
+                          <BadgeEstado estado={p.estado} />
+                          <BadgeRider riderEstado={p.rider_estado} />
+                        </div>
                       </td>
                       <td className="px-5 py-3.5 text-right font-semibold text-gray-800">
                         ${p.total?.toFixed(2)}

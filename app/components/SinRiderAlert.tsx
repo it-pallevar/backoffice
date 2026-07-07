@@ -27,7 +27,7 @@ export function SinRiderAlert() {
 
     // 1) Estado inicial desde la API (pedidos ya en sin_rider).
     api
-      .get<PedidosResp>("/admin/pedidos?estado=sin_rider")
+      .get<PedidosResp>("/admin/pedidos?rider_estado=sin_rider")
       .then((res) => {
         if (!activo) return;
         const init: Record<string, SinRiderItem> = {};
@@ -95,7 +95,7 @@ export function SinRiderAlert() {
       </div>
 
       <Link
-        to="/pedidos?estado=sin_rider"
+        to="/pedidos?rider_estado=sin_rider"
         className="block bg-gray-50 px-4 py-2 text-center text-xs font-medium text-red-700 hover:bg-gray-100"
       >
         Ver todos →
