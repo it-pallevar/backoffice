@@ -78,6 +78,16 @@ export default function NegociosPage() {
     <>
       <Header title="Negocios" />
       <main className="flex-1 overflow-y-auto p-6 space-y-5">
+        {/* Acciones */}
+        <div className="flex justify-end">
+          <Link
+            to="/negocios/nuevo"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg px-4 py-2"
+          >
+            + Registrar negocio
+          </Link>
+        </div>
+
         {/* Filtros */}
         <form onSubmit={handleSearch} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-wrap gap-3 items-end">
           <div className="flex-1 min-w-40">
