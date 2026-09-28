@@ -67,7 +67,7 @@ export function SinRiderAlert() {
   if (list.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-80 rounded-xl border border-red-300 bg-white shadow-lg overflow-hidden">
+    <div className="w-80 rounded-xl border border-red-300 bg-white shadow-lg overflow-hidden">
       <div className="flex items-center gap-2 bg-red-600 px-4 py-2 text-white">
         <span className="relative flex h-2.5 w-2.5">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />

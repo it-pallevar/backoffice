@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router";
 import { useAuth } from "~/context/auth";
 import { Sidebar } from "~/components/Sidebar";
 import { SinRiderAlert } from "~/components/SinRiderAlert";
+import { NuevosRestaurantesAlert } from "~/components/NuevosRestaurantesAlert";
 
 export default function AppLayout() {
   const { user, isLoading } = useAuth();
@@ -33,7 +34,11 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Outlet />
       </div>
-      <SinRiderAlert />
+      {/* Alertas globales apiladas abajo a la derecha */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
+        <NuevosRestaurantesAlert />
+        <SinRiderAlert />
+      </div>
     </div>
   );
 }
