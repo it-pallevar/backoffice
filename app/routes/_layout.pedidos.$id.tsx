@@ -35,7 +35,7 @@ const estadoConfig: Record<string, { label: string; color: string }> = {
   sin_rider:  { label: "Sin rider",  color: "bg-gray-100 text-gray-600" },
 };
 
-const ESTADOS = ["pendiente", "aceptado", "preparando", "en_camino", "entregado", "cancelado", "sin_rider"];
+const ESTADOS = ["pendiente", "aceptado", "preparando", "en_camino", "entregado", "cancelado"];
 
 function BadgeEstado({ estado }: { estado: string }) {
   const cfg = estadoConfig[estado] ?? { label: estado, color: "bg-gray-100 text-gray-600" };
