@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import { Header } from "~/components/Header";
 import { api } from "~/services/api";
 
@@ -34,15 +34,18 @@ export default function NegociosPage() {
 
   // Filtros
   const [nombre, setNombre] = useState("");
-  const [activo, setActivo] = useState("");
+  // Filtro inicial desde ?activo= de la URL (enlace "Ver inactivos" de la alerta de registros).
+  const [searchParams] = useSearchParams();
+  const activoUrl = searchParams.get("activo") ?? "";
+  const [activo, setActivo] = useState(activoUrl);
   const [page, setPage] = useState(1);
 
-  async function fetchNegocios() {
+  async function fetchNegocios(activoFiltro = activo) {
     setLoading(true);
     setError(null);
     const params = new URLSearchParams();
     if (nombre) params.set("nombre", nombre);
-    if (activo !== "") params.set("activo", activo);
+    if (activoFiltro !== "") params.set("activo", activoFiltro);
     params.set("page", String(page));
     try {
       const res = await api.get<PaginatedResponse>(`/admin/negocios?${params}`);
@@ -56,6 +59,16 @@ export default function NegociosPage() {
   }
 
   useEffect(() => { fetchNegocios(); }, [page]);
+
+  // Si ?activo= cambia estando ya en esta pantalla (misma ruta, no se remonta),
+  // se aplica el filtro. Se salta el primer render: ya lo cubre el efecto de arriba.
+  const primerRender = useRef(true);
+  useEffect(() => {
+    if (primerRender.current) { primerRender.current = false; return; }
+    setActivo(activoUrl);
+    setPage(1);
+    fetchNegocios(activoUrl);
+  }, [activoUrl]);
 
   async function toggleActivo(id: string, current: boolean) {
     try {
