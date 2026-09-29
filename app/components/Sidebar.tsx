@@ -37,6 +37,15 @@ const navItems: NavItem[] = [
     ),
   },
   {
+    to: "/busquedas",
+    label: "Búsquedas",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14zM8 11h6M11 8v6" />
+      </svg>
+    ),
+  },
+  {
     to: "/reportes",
     label: "Reportes",
     icon: (

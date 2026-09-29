@@ -1,6 +1,6 @@
-const BASE_URL = (import.meta.env.VITE_API_URL as string) ?? "http://localhost:8000/api";
+export const BASE_URL = (import.meta.env.VITE_API_URL as string) ?? "http://localhost:8000/api";
 
-function getToken(): string | null {
+export function getToken(): string | null {
   return localStorage.getItem("admin_token");
 }
 
