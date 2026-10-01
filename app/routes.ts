@@ -12,6 +12,7 @@ export default [
     route("negocios", "routes/_layout.negocios._index.tsx"),
     route("negocios/nuevo", "routes/_layout.negocios.nuevo.tsx"),
     route("negocios/:id", "routes/_layout.negocios.$id.tsx"),
+    route("prospectos", "routes/_layout.prospectos._index.tsx"),
     route("pedidos", "routes/_layout.pedidos._index.tsx"),
     route("pedidos/:id", "routes/_layout.pedidos.$id.tsx"),
     route("busquedas", "routes/_layout.busquedas.tsx"),

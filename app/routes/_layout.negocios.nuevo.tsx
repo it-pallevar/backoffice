@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, Link, useSearchParams } from "react-router";
 import { Header } from "~/components/Header";
 import { api } from "~/services/api";
 
@@ -11,13 +11,16 @@ const TIPOS = ["restaurante", "farmacia", "ferreteria", "ropa", "servicios", "ot
 
 export default function NuevoNegocioPage() {
   const navigate = useNavigate();
+  // Si viene de "Convertir en negocio" (Prospectos), precarga lo que ya se sabe.
+  const [searchParams] = useSearchParams();
+  const prospectoId = searchParams.get("prospecto");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     // Negocio
-    nombre: "",
-    telefono: "",
+    nombre: searchParams.get("nombre") ?? "",
+    telefono: searchParams.get("telefono") ?? "",
     direccion: "",
     tipo_negocio: "restaurante",
     is_activo: true,
@@ -67,6 +70,10 @@ export default function NuevoNegocioPage() {
       if (form.longitud) payload.longitud = parseFloat(form.longitud);
 
       await api.post("/admin/negocios", payload);
+      // Cierra el prospecto de origen; si falla no debe tumbar el registro ya hecho.
+      if (prospectoId) {
+        await api.put(`/admin/prospectos/${prospectoId}`, { estado: "registrado" }).catch(() => {});
+      }
       navigate("/negocios");
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo registrar el negocio");

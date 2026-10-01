@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
+import { api } from "~/services/api";
 
 interface NavItem {
   to: string;
@@ -24,6 +26,15 @@ const navItems: NavItem[] = [
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    ),
+  },
+  {
+    to: "/prospectos",
+    label: "Prospectos",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.95.68l1.5 4.5a1 1 0 01-.5 1.2l-2.26 1.13a11 11 0 005.52 5.52l1.13-2.26a1 1 0 011.2-.5l4.5 1.5a1 1 0 01.68.95V19a2 2 0 01-2 2h-1C9.72 21 3 14.28 3 6V5z" />
       </svg>
     ),
   },
@@ -112,6 +123,18 @@ const navItems: NavItem[] = [
 ];
 
 export function Sidebar() {
+  // Llamadas de prospectos que toca hacer hoy (o atrasadas)
+  const [pendientes, setPendientes] = useState(0);
+  useEffect(() => {
+    const cargar = () =>
+      api.get<{ data: { pendientes: number } }>("/admin/prospectos/pendientes")
+        .then((r) => setPendientes(r.data.pendientes))
+        .catch(() => {});
+    cargar();
+    const t = setInterval(cargar, 120_000);
+    return () => clearInterval(t);
+  }, []);
+
   return (
     <aside className="w-60 shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col h-screen sticky top-0">
       {/* Logo */}
@@ -144,6 +167,11 @@ export function Sidebar() {
           >
             {item.icon}
             {item.label}
+            {item.to === "/prospectos" && pendientes > 0 && (
+              <span className="ml-auto bg-red-500 text-white text-[11px] font-bold rounded-full px-1.5 min-w-5 text-center">
+                {pendientes}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
