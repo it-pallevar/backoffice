@@ -67,6 +67,11 @@ const fmtDia = (iso: string | null) =>
   iso
     ? new Date(iso.slice(0, 10) + "T12:00:00").toLocaleDateString("es-SV", { day: "2-digit", month: "short" })
     : "—";
+// Link de WhatsApp (wa.me + código de país 503 + número). Si ya trae el 503, no se duplica.
+const waLink = (tel: string) => {
+  const d = tel.replace(/\D/g, "");
+  return `https://wa.me/${d.length > 8 && d.startsWith("503") ? d : "503" + d}`;
+};
 const estado = (k: string) => ESTADOS.find((e) => e.k === k) ?? ESTADOS[0];
 const pendiente = (p: Prospecto) =>
   !!p.proxima_llamada && p.proxima_llamada <= isoHoy() && !["registrado", "perdido"].includes(p.estado);
@@ -271,9 +276,12 @@ export default function ProspectosPage() {
                     </td>
                     <td className="px-4 py-3"><Proxima p={p} /></td>
                     <td className="px-4 py-3 text-gray-600">{p.responsable || "—"}</td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
                       <a href={`tel:${p.telefono}`} onClick={(e) => e.stopPropagation()} className="text-indigo-600 hover:text-indigo-800 font-medium">
                         Llamar
+                      </a>
+                      <a href={waLink(p.telefono)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-emerald-600 hover:text-emerald-800 font-medium">
+                        WhatsApp
                       </a>
                     </td>
                   </tr>
@@ -302,6 +310,9 @@ export default function ProspectosPage() {
                         <p className="text-xs mt-2">
                           📞 <Proxima p={p} /> <span className="text-gray-400">· {p.responsable || "—"}</span>
                         </p>
+                        <a href={waLink(p.telefono)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="inline-block mt-2 text-xs font-medium text-emerald-600 hover:text-emerald-800">
+                          WhatsApp · {p.telefono}
+                        </a>
                       </div>
                     ))}
                   </div>
@@ -379,7 +390,7 @@ function DetalleDrawer({
     }
   }
 
-  const wa = "https://wa.me/503" + p.telefono.replace(/\D/g, "");
+  const wa = waLink(p.telefono);
 
   return (
     <>
