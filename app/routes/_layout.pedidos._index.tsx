@@ -11,6 +11,8 @@ interface PedidoItem {
   id: string;
   estado: string;
   rider_estado?: string | null;
+  // Tiene un reporte abierto: el backoffice debe decidir qué hacer
+  en_revision?: boolean;
   total: number;
   negocio: { id: string; nombre: string };
   cliente: { id: string; nombre: string; email: string };
@@ -39,6 +41,17 @@ function BadgeEstado({ estado }: { estado: string }) {
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cfg.color}`}>
       {cfg.label}
+    </span>
+  );
+}
+
+function BadgeRevision() {
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+      <svg className="w-3.5 h-3.5 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L1 21h22L12 2zm1 15h-2v-2h2v2zm0-4h-2V9h2v4z" />
+      </svg>
+      En revisión
     </span>
   );
 }
@@ -217,6 +230,7 @@ export default function PedidosPage() {
                       </td>
                       <td className="px-5 py-3.5 text-center">
                         <div className="flex flex-col items-center gap-1">
+                          {p.en_revision && <BadgeRevision />}
                           <BadgeEstado estado={p.estado} />
                           <BadgeRider riderEstado={p.rider_estado} />
                         </div>
