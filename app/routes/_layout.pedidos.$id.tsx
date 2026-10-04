@@ -10,6 +10,7 @@ export function meta() {
 interface PedidoDetalle {
   id: string;
   estado: string;
+  en_revision?: boolean;
   total: number;
   contenido: {
     items: { producto: { nombre: string }; cantidad: number; precio_unitario?: number }[];
@@ -120,6 +121,25 @@ export default function PedidoDetallePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Columna principal */}
           <div className="lg:col-span-2 space-y-5">
+            {/* Reporte abierto: el backoffice decide */}
+            {pedido.en_revision && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                <svg className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L1 21h22L12 2zm1 15h-2v-2h2v2zm0-4h-2V9h2v4z" />
+                </svg>
+                <div className="text-sm">
+                  <p className="font-semibold text-amber-900">Pedido en revisión</p>
+                  <p className="text-amber-800 mt-0.5">
+                    Tiene un reporte abierto. Mientras tanto el rider no puede marcarlo como entregado; vos sí podés cambiar su estado.
+                    Resolvé o rechazá el reporte para quitar la revisión.
+                  </p>
+                  <Link to="/reportes" className="inline-block mt-2 font-medium text-amber-900 underline">
+                    Ir a Reportes
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {/* Estado y cambio */}
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-center justify-between flex-wrap gap-3">
