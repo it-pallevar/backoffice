@@ -5,11 +5,14 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+/* El backoffice está diseñado solo en modo claro (tarjetas y campos con fondo blanco).
+   Con color-scheme: dark, Chrome ponía en blanco el texto de inputs, selects y textareas
+   sobre sus fondos blancos y no se veía lo que se escribía. */
+html {
+  color-scheme: light;
+}
+
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
-
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+  @apply bg-white;
 }
