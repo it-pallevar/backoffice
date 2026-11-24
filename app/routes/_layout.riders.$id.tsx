@@ -35,7 +35,25 @@ interface RiderDetalle {
     cash_collected_today: number;
     earnings_available: number;
   } | null;
+  codigo_referido: string | null;
+  referidos: Referido[];
 }
+
+interface Referido {
+  id: string;
+  tipo: "cliente" | "negocio";
+  nombre: string;
+  estado: "pendiente" | "pagado" | "anulado";
+  monto: number | null;
+  created_at: string;
+  pagado_at: string | null;
+}
+
+const referidoEstadoConfig: Record<string, { label: string; color: string }> = {
+  pendiente: { label: "Pendiente", color: "bg-yellow-100 text-yellow-800" },
+  pagado:    { label: "Pagado",    color: "bg-green-100 text-green-700" },
+  anulado:   { label: "Anulado",   color: "bg-gray-100 text-gray-500" },
+};
 
 const docEstadoConfig: Record<string, { label: string; color: string }> = {
   pendiente:  { label: "Pendiente",  color: "bg-yellow-100 text-yellow-800" },
@@ -92,6 +110,25 @@ export default function RiderDetallePage() {
       alert(e instanceof Error ? e.message : "Error al actualizar");
     } finally {
       setUpdatingEstado(false);
+    }
+  }
+
+  async function handleAnularReferido(referidoId: string) {
+    if (!confirm("¿Anular este referido? El rider no recibirá el bono.")) return;
+    try {
+      await api.patch(`/admin/referidos/${referidoId}/anular`, {});
+      setRider((prev) =>
+        prev
+          ? {
+              ...prev,
+              referidos: (prev.referidos ?? []).map((r) =>
+                r.id === referidoId ? { ...r, estado: "anulado" } : r
+              ),
+            }
+          : prev
+      );
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "No se pudo anular el referido");
     }
   }
 
@@ -204,6 +241,48 @@ export default function RiderDetallePage() {
                 </div>
               </div>
             )}
+
+            {/* Referidos */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+              <h3 className="font-semibold text-gray-900 text-sm mb-3">Referidos</h3>
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-gray-400 text-sm">Código</span>
+                <span className="font-mono font-bold tracking-widest text-gray-800">
+                  {rider.codigo_referido ?? "—"}
+                </span>
+              </div>
+              {(rider.referidos ?? []).length === 0 ? (
+                <p className="text-gray-400 text-sm">Aún no ha referido a nadie</p>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {rider.referidos.map((r) => {
+                    const cfg = referidoEstadoConfig[r.estado] ?? referidoEstadoConfig.pendiente;
+                    return (
+                      <li key={r.id} className="py-2 flex items-center gap-2 text-sm">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-gray-800 truncate">{r.nombre || "—"}</p>
+                          <p className="text-xs text-gray-400">
+                            {r.tipo === "negocio" ? "Restaurante" : "Cliente"}
+                            {r.estado === "pagado" && r.monto != null ? ` · $${Number(r.monto).toFixed(2)}` : ""}
+                          </p>
+                        </div>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${cfg.color}`}>
+                          {cfg.label}
+                        </span>
+                        {r.estado === "pendiente" && (
+                          <button
+                            onClick={() => handleAnularReferido(r.id)}
+                            className="text-xs text-red-600 hover:underline"
+                          >
+                            Anular
+                          </button>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           </div>
 
           {/* Documentos */}
