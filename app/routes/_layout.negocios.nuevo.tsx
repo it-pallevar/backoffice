@@ -38,6 +38,8 @@ export default function NuevoNegocioPage() {
     correo: "",
     telefono_admin: "",
     password: "",
+    // Programa de referidos
+    codigo_rider: "",
   });
 
   function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
@@ -65,6 +67,7 @@ export default function NuevoNegocioPage() {
         correo: form.correo,
         telefono_admin: form.telefono_admin || undefined,
         password: form.password,
+        codigo_rider: form.codigo_rider || undefined,
       };
       if (form.latitud) payload.latitud = parseFloat(form.latitud);
       if (form.longitud) payload.longitud = parseFloat(form.longitud);
@@ -199,6 +202,17 @@ export default function NuevoNegocioPage() {
               <div className="sm:col-span-2">
                 <label className={label}>Contraseña * (mín. 6)</label>
                 <input type="password" className={input} value={form.password} onChange={(e) => set("password", e.target.value)} minLength={6} required />
+              </div>
+              <div className="sm:col-span-2">
+                <label className={label}>Código de rider (opcional)</label>
+                <input
+                  className={`${input} font-mono tracking-widest uppercase`}
+                  value={form.codigo_rider}
+                  onChange={(e) => set("codigo_rider", e.target.value.replace(/[^0-9a-fA-F]/g, "").toUpperCase().slice(0, 6))}
+                  maxLength={6}
+                  placeholder="Ej. A1B2C3"
+                />
+                <p className="text-xs text-gray-400 mt-1">Si un rider trajo a este restaurante, ingresa su código de 6 caracteres.</p>
               </div>
             </div>
           </section>
